@@ -10,6 +10,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "mongodb": "6.6"
+    "@elastic/elasticsearch": "^8.13.1",
+    "cassandra-driver": "^4.7.2",
+    "config": "^3.3.11",
+    "express": "^4.19.2",
+    "mongodb": "6.6",
+    "neo4j-driver": "^5.20.0",
+    "redis": "^4.6.14"
   }
 }
