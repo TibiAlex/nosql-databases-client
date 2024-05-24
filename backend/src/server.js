@@ -1,4 +1,8 @@
 const express = require('express');
+const cors = require('cors');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 const { connectToDatabase, queryMongoDB, closeConnection } = require('./connectionsMongoDB');
 const { connectToCassandra, queryCassandra, disconnectFromCassandra } = require('./connectionsCassandra');
 const { connectToRedis, queryRedis, disconnectFromRedis } = require('./connectionsRedis');
@@ -6,7 +10,8 @@ const { connectToElastic, queryElastic, disconnectFromElastic } = require('./con
 const { connectToNeo4j, queryNeo4j, disconnectFromNeo4j } = require('./connectionsNeo4j');
 
 const app = express();
-const port = 3000;
+const port = 3001;
+const upload = multer({ dest: 'uploads/' });
 
 app.use(express.json());
 
@@ -64,7 +69,7 @@ app.post('/connect/redis', async (req, res) => {
     }
 });
 
-app.post('/connect/elastic', async (req, res) => {
+app.post('/connect/elasticsearch', async (req, res) => {
     const { node, username, password } = req.body;
 
     if (!node || !username || !password) {
@@ -130,7 +135,7 @@ app.get('/query/redis', async (req, res) => {
       }
 });
 
-app.post('/query/elastic', async (req, res) => {
+app.post('/query/elasticsearch', async (req, res) => {
     try {
         await queryElastic();
         res.status(200).send('Query executed');
@@ -140,7 +145,27 @@ app.post('/query/elastic', async (req, res) => {
       }
 });
 
-app.post('/query/neo4j', async (req, res) => {
+app.post('/query/neo4j', upload.single('file'), (req, res) => {
+    try {
+        const file = req.file;
+
+        if (!file) {
+            return res.status(400).send('No file uploaded');
+        }
+        // Display file details received in the JSON
+        console.log('File details from JSON:', file);
+
+        const filePath = file.path;
+        const fileContents = fs.readFileSync(filePath, 'utf8');
+        queryNeo4j(fileContents);
+
+        res.send(`File contents:\n${fileContents}`);
+
+        fs.unlinkSync(filePath);
+    } catch (error) {
+        console.error('Error uploading file:', error);
+        res.status(500).send('Error uploading file');
+    }
 });
 
 app.post('/disconnect/mongoDB', async (req, res) => {
@@ -176,7 +201,7 @@ app.post('/disconnect/redis', async (req, res) => {
     }
 });
 
-app.post('/disconnect/elastic', async (req, res) => {
+app.post('/disconnect/elasticsearch', async (req, res) => {
     try {
         await disconnectFromElastic();
         console.log('Disconnected from Elastic');
@@ -197,6 +222,9 @@ app.post('/disconnect/neo4j', async (req, res) => {
         res.status(500).send('Error disconnecting from Neo4j');
     }
 });
+
+// Allow all origins
+app.use(cors());
 
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);

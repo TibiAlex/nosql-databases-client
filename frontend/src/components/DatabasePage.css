@@ -1,0 +1,59 @@
+.database-page-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  h1 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .button-container {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .connect-button,
+  .query-button,
+  .disconnect-button,
+  .home-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+  }
+  
+  .connect-button {
+    background-color: #007bff;
+    color: #fff;
+  }
+  
+  .query-button {
+    background-color: #ffc107;
+    color: #333;
+  }
+  
+  .disconnect-button {
+    background-color: #dc3545;
+    color: #fff;
+  }
+  
+  .home-button {
+    background-color: #28a745;
+    color: #fff;
+  }
+  
+  .connect-button:hover,
+  .query-button:hover,
+  .disconnect-button:hover,
+  .home-button:hover {
+    filter: brightness(90%);
+  }
