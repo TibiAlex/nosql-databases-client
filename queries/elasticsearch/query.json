@@ -1,0 +1,122 @@
+{
+    "queries": [
+      {
+        "description": "Create an Index",
+        "method": "PUT",
+        "endpoint": "/my_index",
+        "body": {
+          "settings": {
+            "number_of_shards": 1,
+            "number_of_replicas": 1
+          }
+        }
+      },
+      {
+        "description": "Add a Document",
+        "method": "POST",
+        "endpoint": "/my_index/_doc/1",
+        "body": {
+          "title": "Elasticsearch Basics",
+          "author": "John Doe",
+          "publish_date": "2021-12-15",
+          "content": "This is a beginner's guide to Elasticsearch."
+        }
+      },
+      {
+        "description": "Retrieve a Document by ID",
+        "method": "GET",
+        "endpoint": "/my_index/_doc/1"
+      },
+      {
+        "description": "Search for Documents",
+        "method": "GET",
+        "endpoint": "/my_index/_search",
+        "body": {
+          "query": {
+            "match": {
+              "content": "Elasticsearch"
+            }
+          }
+        }
+      },
+      {
+        "description": "Update a Document",
+        "method": "POST",
+        "endpoint": "/my_index/_update/1",
+        "body": {
+          "doc": {
+            "author": "Jane Doe"
+          }
+        }
+      },
+      {
+        "description": "Delete a Document",
+        "method": "DELETE",
+        "endpoint": "/my_index/_doc/1"
+      },
+      {
+        "description": "Bulk Insert Documents",
+        "method": "POST",
+        "endpoint": "/my_index/_bulk",
+        "body": [
+          { "index": { "_id": "2" } },
+          { "title": "Advanced Elasticsearch", "author": "Alice Smith", "publish_date": "2022-01-10", "content": "Deep dive into Elasticsearch features." },
+          { "index": { "_id": "3" } },
+          { "title": "Elasticsearch in Production", "author": "Bob Johnson", "publish_date": "2022-02-20", "content": "Best practices for using Elasticsearch in production environments." }
+        ]
+      },
+      {
+        "description": "Create an Index with Mappings",
+        "method": "PUT",
+        "endpoint": "/my_index",
+        "body": {
+          "mappings": {
+            "properties": {
+              "title": {
+                "type": "text"
+              },
+              "author": {
+                "type": "text"
+              },
+              "publish_date": {
+                "type": "date"
+              },
+              "content": {
+                "type": "text"
+              }
+            }
+          }
+        }
+      },
+      {
+        "description": "Filter Results",
+        "method": "GET",
+        "endpoint": "/my_index/_search",
+        "body": {
+          "query": {
+            "bool": {
+              "filter": [
+                { "term": { "author.keyword": "John Doe" } },
+                { "range": { "publish_date": { "gte": "2021-01-01" } } }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "description": "Aggregations",
+        "method": "GET",
+        "endpoint": "/my_index/_search",
+        "body": {
+          "size": 0,
+          "aggs": {
+            "authors": {
+              "terms": {
+                "field": "author.keyword"
+              }
+            }
+          }
+        }
+      }
+    ]
+  }

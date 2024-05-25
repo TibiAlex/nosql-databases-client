@@ -27,18 +27,26 @@ async function connectToCassandra(contactPoints, localDataCenter, keyspace) {
     }
 }
 
-async function queryCassandra() {
+async function queryCassandra(queries) {
     if (!client) {
       throw new Error('Not connected to the database');
     }
-    const query = 'SELECT * FROM store.shopping_cart';
-    try {
-      const result = await client.execute(query);
-      console.log('Shopping Cart:', result.rows); // Print the values here
-      return result.rows;
-    } catch (err) {
-      console.error('Error fetching shopping cart:', err);
-      throw err;
+    for (const query of queries) {
+      try {
+        if (query.toUpperCase().startsWith('USE')) {
+          // Skip USE keyspace query since we already set the keyspace in the client configuration
+          console.log(`Skipping query: ${query}`);
+          continue;
+        }
+        const result = await client.execute(query);
+        console.log(`Executed query: ${query}`);
+        if (result.rows) {
+          console.log('Result:', result.rows);
+        }
+      } catch (error) {
+        console.error(`Error executing query: ${query}`);
+        console.error(error);
+      }
     }
   }
 

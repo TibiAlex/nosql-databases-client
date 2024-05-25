@@ -24,32 +24,59 @@ async function connectToElastic(node, username, password) {
     .catch(error => console.error(error))
 }
 
-async function queryElastic() {
-    await client.index({
-        index: 'game-of-thrones',
-        body: {
-        character: 'Ned Stark',
-        quote: 'Winter is coming.'
+async function queryElastic(data) {
+    for (const query of data.queries) {
+        try {
+          let response;
+          switch (query.method) {
+            case 'GET':
+              response = await client.transport.request({
+                method: 'GET',
+                path: query.endpoint,
+                body: query.body
+              });
+              break;
+            case 'POST':
+              if (query.endpoint === '/my_index/_bulk') {
+                // Bulk request must be formatted correctly with newlines and include index in each action metadata
+                const bulkBody = query.body.map(item => JSON.stringify(item)).join('\n') + '\n';
+                response = await client.bulk({ index: 'my_index', body: bulkBody });
+              } else {
+                response = await client.transport.request({
+                  method: 'POST',
+                  path: query.endpoint,
+                  body: query.body
+                });
+              }
+              break;
+            case 'PUT':
+              response = await client.transport.request({
+                method: 'PUT',
+                path: query.endpoint,
+                body: query.body
+              });
+              break;
+            case 'DELETE':
+              response = await client.transport.request({
+                method: 'DELETE',
+                path: query.endpoint
+              });
+              break;
+            default:
+              console.log(`Unknown method: ${query.method}`);
+              continue;
+          }
+          console.log(`${query.description} - Status: ${response.statusCode || response.status}`);
+        } catch (error) {
+          console.error(`${query.description} - Error: ${error.message}`);
+          if (error.meta && error.meta.body) {
+            console.error(`        Root causes:`);
+            error.meta.body.error.root_cause.forEach(cause => {
+              console.error(`                ${cause.type}: ${cause.reason}`);
+            });
+          }
         }
-    })
-    
-    await client.index({
-        index: 'game-of-thrones',
-        body: {
-        character: 'Daenerys Targaryen',
-        quote: 'I am the blood of the dragon.'
-        }
-    })
-    
-    await client.index({
-        index: 'game-of-thrones',
-        body: {
-        character: 'Tyrion Lannister',
-        quote: 'A mind needs books like a sword needs whetstone.'
-        }
-    })
-    
-    await client.indices.refresh({index: 'game-of-thrones'})
+    }
 }   
 
 async function disconnectFromElastic() {

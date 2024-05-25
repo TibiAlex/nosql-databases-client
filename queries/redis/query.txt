@@ -1,0 +1,63 @@
+# Set a key-value pair
+SET my_key "Hello, Redis!"
+
+# Get the value of a key
+GET my_key
+
+# Set a key with an expiration time of 10 seconds
+SETEX my_key_exp 10 "This is temporary"
+
+# Check remaining time to live for a key
+TTL my_key_exp
+
+# Increment a numeric value
+INCR my_counter
+
+# Add elements to a list
+RPUSH my_list "item1"
+RPUSH my_list "item2"
+RPUSH my_list "item3"
+
+# Get all elements from a list
+LRANGE my_list 0 -1
+
+# Pop an element from the list
+LPOP my_list
+
+# Add members to a set
+SADD my_set "member1"
+SADD my_set "member2"
+SADD my_set "member3"
+
+# Get all members of a set
+SMEMBERS my_set
+
+# Remove a member from a set
+SREM my_set "member2"
+
+# Add a field-value pair to a hash
+HSET my_hash field1 "value1"
+
+# Get the value of a field in a hash
+HGET my_hash field1
+
+# Get all fields and values in a hash
+HGETALL my_hash
+
+# Use a transaction to perform multiple commands atomically
+MULTI
+SET trans_key1 "value1"
+SET trans_key2 "value2"
+EXEC
+
+# Delete a key
+DEL my_key
+
+# Check if a key exists
+EXISTS my_key
+
+# Publish a message to a channel
+PUBLISH my_channel "Hello, subscribers!"
+
+# Subscribe to a channel (Note: This command would typically be run in a different session)
+SUBSCRIBE my_channel

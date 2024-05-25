@@ -105,44 +105,104 @@ app.post('/connect/neo4j', async (req, res) => {
     }
 });
 
-app.get('/query/mongoDB', async (req, res) => {
+app.post('/query/mongodb', upload.single('file'), async (req, res) => {
     try {
-      const response = await queryMongoDB();
-      res.status(200).json(response);
-    } catch (err) {
-      console.error('Error fetching users');
-      res.status(500).send('Error fetching users');
+        const file = req.file;
+
+        if (!file) {
+            return res.status(400).send('No file uploaded');
+        }
+        // Display file details received in the JSON
+        console.log('File details from JSON:', file);
+
+        const filePath = file.path;
+        const fileContents = fs.readFileSync(filePath, 'utf8');
+
+        queryMongoDB(fileContents);
+
+        res.send(`File contents:\n${fileContents}`);
+
+        fs.unlinkSync(filePath);
+    } catch (error) {
+        console.error('Error uploading file:', error);
+        res.status(500).send('Error uploading file');
     }
 });
 
-app.get('/query/cassandra', async (req, res) => {
+app.post('/query/cassandra', upload.single('file'), async (req, res) => {
     try {
-        const response = await queryCassandra();
-        res.status(200).json(response);
-      } catch (err) {
-        console.error('Error fetching shopping cart:', err);
-        res.status(500).send('Error fetching shopping cart');
-      }
+        const file = req.file;
+
+        if (!file) {
+            return res.status(400).send('No file uploaded');
+        }
+        // Display file details received in the JSON
+        console.log('File details from JSON:', file);
+
+        const filePath = file.path;
+        const fileContents = fs.readFileSync(filePath, 'utf8');
+
+        const queries = fileContents.split(';').map(query => query.trim()).filter(query => query.length > 0);
+        queryCassandra(queries);
+
+        res.send(`File contents:\n${fileContents}`);
+
+        fs.unlinkSync(filePath);
+    } catch (error) {
+        console.error('Error uploading file:', error);
+        res.status(500).send('Error uploading file');
+    }
 });
 
-app.get('/query/redis', async (req, res) => {
+app.post('/query/redis', upload.single('file'), async (req, res) => {
     try {
-        const response = await queryRedis();
-        res.status(200).json(response);
-      } catch (err) {
-        console.error('Error fetching shopping cart:', err);
-        res.status(500).send('Error fetching shopping cart');
-      }
+        const file = req.file;
+
+        if (!file) {
+            return res.status(400).send('No file uploaded');
+        }
+        // Display file details received in the JSON
+        console.log('File details from JSON:', file);
+
+        const filePath = file.path;
+        const fileContents = fs.readFileSync(filePath, 'utf8');
+
+        const commands = fileContents.split('\n').map(cmd => cmd.trim()).filter(cmd => cmd.length > 0 && !cmd.startsWith('#'));
+
+        queryRedis(commands);
+
+        res.send(`File contents:\n${fileContents}`);
+
+        fs.unlinkSync(filePath);
+    } catch (error) {
+        console.error('Error uploading file:', error);
+        res.status(500).send('Error uploading file');
+    }
 });
 
-app.post('/query/elasticsearch', async (req, res) => {
+app.post('/query/elasticsearch', upload.single('file'), async (req, res) => {
     try {
-        await queryElastic();
-        res.status(200).send('Query executed');
-      } catch (err) {
-        console.error('Error querying Elastic:', err);
-        res.status(500).send('Error querying Elastic');
-      }
+        const file = req.file;
+
+        if (!file) {
+            return res.status(400).send('No file uploaded');
+        }
+        // Display file details received in the JSON
+        console.log('File details from JSON:', file);
+
+        const filePath = file.path;
+        const fileContents = fs.readFileSync(filePath, 'utf8');
+
+        const data = JSON.parse(fileContents);
+        queryElastic(data);
+
+        res.send(`File contents:\n${fileContents}`);
+
+        fs.unlinkSync(filePath);
+    } catch (error) {
+        console.error('Error uploading file:', error);
+        res.status(500).send('Error uploading file');
+    }
 });
 
 app.post('/query/neo4j', upload.single('file'), (req, res) => {
@@ -168,7 +228,7 @@ app.post('/query/neo4j', upload.single('file'), (req, res) => {
     }
 });
 
-app.post('/disconnect/mongoDB', async (req, res) => {
+app.post('/disconnect/mongodb', async (req, res) => {
     try {
       await closeConnection();
       console.log('Disconnected from mongoDB');

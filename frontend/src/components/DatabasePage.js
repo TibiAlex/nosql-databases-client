@@ -8,6 +8,10 @@ import FormConnectNeo4j from './forms/FormConnectNEO4J';
 import axios from 'axios';
 import './DatabasePage.css';
 import FileUploadFormNeo4j from './forms/FormQueryNEO4J';
+import FileUploadFormElastic from './forms/FormQueryElastic';
+import FileUploadFormCassandra from './forms/FormQueryCassandra';
+import FileUploadFormRedis from './forms/FormQueryRedis';
+import FileUploadFormMongo from './forms/FormQueryMongo';
 
 const DatabasePage = () => {
   let navigate = useNavigate();
@@ -98,6 +102,10 @@ const DatabasePage = () => {
         </div>
       )}
       {showFormQuery && database === 'neo4j' && <FileUploadFormNeo4j onSubmit={handleFormSubmitQuery} />}
+      {showFormQuery && database === 'elasticsearch' && <FileUploadFormElastic onSubmit={handleFormSubmitQuery} />}
+      {showFormQuery && database === 'cassandra' && <FileUploadFormCassandra onSubmit={handleFormSubmitQuery} />}
+      {showFormQuery && database === 'redis' && <FileUploadFormRedis onSubmit={handleFormSubmitQuery} />}
+      {showFormQuery && database === 'mongodb' && <FileUploadFormMongo onSubmit={handleFormSubmitQuery} />}
       <br></br>
       <button className="home-button" onClick={handleClick}>Home</button>
     </div>

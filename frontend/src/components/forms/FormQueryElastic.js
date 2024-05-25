@@ -21,7 +21,7 @@ const Form = ({ onSubmit }) => {
 
   return (
     <div className="form-container">
-      <h2>Upload A Query File .cypher file</h2>
+      <h2>Upload A Query File JSON</h2>
       <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label htmlFor="fileInput">Choose File:</label>

@@ -12,13 +12,23 @@ async function connectToDatabase(uri, databaseName) {
 }
 
 //  to be changed after finging tests
-async function queryMongoDB() {
+async function queryMongoDB(documentToInsert) {
   if (!database) {
     throw new Error("Not connected to the database");
   }
-  const usersCollection = database.collection('system.users');
-  const users = await usersCollection.find({}).toArray();
-  return users;
+  try {
+    // Select the database
+    const database = client.db(dbName);
+
+    // Select the collection
+    const collection = database.collection('my_collection');
+
+    // Insert the document into the collection
+    const insertResult = await collection.insertOne(documentToInsert);
+    console.log('Document inserted:', insertResult.insertedId);
+  } catch (error) {
+    console.error('Error inserting document:', error);
+  }
 }
 
 async function closeConnection() {
